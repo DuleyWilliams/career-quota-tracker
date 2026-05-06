@@ -41,3 +41,48 @@ body {
   margin: 0;
   font-size: 18px;
 }
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  padding: 32px 40px;
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 24px;
+  background: var(--white);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+}
+
+.label {
+  display: block;
+  color: var(--muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+
+.card strong {
+  display: block;
+  font-size: 42px;
+  margin-bottom: 14px;
+}
+
+.bar {
+  width: 100%;
+  height: 12px;
+  background: #eee;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar div {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--orange), var(--gold));
+}

@@ -7,12 +7,32 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="app">
-    <header class="hero">
-      <h1>Career Quota Tracker</h1>
-      <p>Track job applications, GitHub commits, and LinkedIn connections for NSS career development.</p>
-    </header>
-  </main>
+ <main class="app">
+  <header class="hero">
+    <h1>Career Quota Tracker</h1>
+    <p>Track job applications, GitHub commits, and LinkedIn connections for NSS career development.</p>
+  </header>
+
+  <section class="dashboard">
+    <article class="card">
+      <span class="label">Job Applications</span>
+      <strong id="jobCount">0/4</strong>
+      <div class="bar"><div id="jobBar"></div></div>
+    </article>
+
+    <article class="card">
+      <span class="label">GitHub Commits</span>
+      <strong id="commitCount">0/6</strong>
+      <div class="bar"><div id="commitBar"></div></div>
+    </article>
+
+    <article class="card">
+      <span class="label">LinkedIn Connections</span>
+      <strong id="connectionCount">0/8</strong>
+      <div class="bar"><div id="connectionBar"></div></div>
+    </article>
+  </section>
+</main>
 
   <script src="script.js"></script>
 </body>
