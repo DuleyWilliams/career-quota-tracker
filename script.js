@@ -33,9 +33,7 @@ function addJob() {
   document.getElementById("jobRole").value = "";
   document.getElementById("jobLink").value = "";
 
-  render(
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  );
+  render();
 }
 
 function addCommit() {
@@ -87,9 +85,25 @@ function addConnection() {
 }
 
 function render() {
-  renderList("jobList", data.jobs, item => `${item.date} — ${item.company}: ${item.role}`);
-  renderList("commitList", data.commits, item => `${item.date} — ${item.message}`);
-  renderList("connectionList", data.connections, item => `${item.date} — ${item.name} ${item.company ? "(" + item.company + ")" : ""}`);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+  renderList(
+    "jobList",
+    data.jobs,
+    item => `${item.date} | ${item.company}: ${item.role}`
+  );
+
+  renderList(
+    "commitList",
+    data.commits,
+    item => `${item.date} | ${item.message}`
+  );
+
+  renderList(
+    "connectionList",
+    data.connections,
+    item => `${item.date} | ${item.name} ${item.company ? "(" + item.company + ")" : ""}`
+  );
 
   updateProgress("jobCount", "jobBar", data.jobs.length, goals.jobs);
   updateProgress("commitCount", "commitBar", data.commits.length, goals.commits);
