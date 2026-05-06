@@ -32,6 +32,50 @@
       <div class="bar"><div id="connectionBar"></div></div>
     </article>
   </section>
+
+  <section class="forms">
+  <div class="form-card">
+    <h2>Add Job Application</h2>
+    <input id="jobCompany" placeholder="Company" />
+    <input id="jobRole" placeholder="Role" />
+    <input id="jobLink" placeholder="Job link or notes" />
+    <button onclick="addJob()">Add Application</button>
+  </div>
+
+  <div class="form-card">
+    <h2>Add GitHub Commit</h2>
+    <input id="commitMessage" placeholder="Commit message" />
+    <input id="commitFeature" placeholder="Feature area" />
+    <input id="commitLink" placeholder="Commit or repo link" />
+    <button onclick="addCommit()">Add Commit</button>
+  </div>
+
+  <div class="form-card">
+    <h2>Add LinkedIn Connection</h2>
+    <input id="connectionName" placeholder="Name" />
+    <input id="connectionCompany" placeholder="Company" />
+    <input id="connectionLink" placeholder="Profile link or notes" />
+    <button onclick="addConnection()">Add Connection</button>
+  </div>
+</section>
+
+<section class="lists">
+  <div>
+    <h2>Applications</h2>
+    <ul id="jobList"></ul>
+  </div>
+
+  <div>
+    <h2>Commits</h2>
+    <ul id="commitList"></ul>
+  </div>
+
+  <div>
+    <h2>Connections</h2>
+    <ul id="connectionList"></ul>
+  </div>
+</section>
+
 </main>
 
   <script src="script.js"></script>
