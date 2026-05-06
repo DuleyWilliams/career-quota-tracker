@@ -127,3 +127,42 @@ function updateProgress(countId, barId, current, goal) {
 }
 
 render();
+
+function exportProgress() {
+  const exportData = {
+    exportedAt: new Date().toISOString(),
+    totals: {
+      jobs: data.jobs.length,
+      commits: data.commits.length,
+      connections: data.connections.length
+    },
+    data
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+    type: "application/json"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "career-quota-progress.json";
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function resetTracker() {
+  const confirmed = confirm("Clear all saved tracker data?");
+  if (!confirmed) return;
+
+  data = {
+    jobs: [],
+    commits: [],
+    connections: []
+  };
+
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+}

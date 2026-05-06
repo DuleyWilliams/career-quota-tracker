@@ -140,3 +140,41 @@ li {
   border-bottom: 1px solid var(--line);
   padding: 10px 0;
 }
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  padding: 20px 40px 0;
+}
+
+.toolbar button {
+  width: auto;
+}
+
+button.dark {
+  background: #222;
+}
+
+@media (max-width: 850px) {
+  .dashboard,
+  .forms,
+  .lists {
+    grid-template-columns: 1fr;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .hero {
+    padding: 30px 20px;
+  }
+
+  .toolbar {
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-direction: column;
+  }
+
+  .toolbar button {
+    width: 100%;
+  }
+}
