@@ -4,7 +4,9 @@ const goals = {
   connections: 8
 };
 
-let data = {
+const STORAGE_KEY = "careerQuotaTrackerData";
+
+let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
   jobs: [],
   commits: [],
   connections: []
@@ -31,7 +33,9 @@ function addJob() {
   document.getElementById("jobRole").value = "";
   document.getElementById("jobLink").value = "";
 
-  render();
+  render(
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  );
 }
 
 function addCommit() {
