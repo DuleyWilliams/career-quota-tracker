@@ -18,3 +18,7 @@ https://duleywilliams.github.io/career-quota-tracker/
 ## Project Status
 
 This project was built as part of my NSS career development tracking process. It tracks job applications, GitHub commits, and LinkedIn networking activity for each two-week reporting period.
+
+## Privacy Note
+
+The live tracker stores entries locally in the user's browser using localStorage. No job application, networking, or commit-tracking data is uploaded to GitHub or shared publicly.
