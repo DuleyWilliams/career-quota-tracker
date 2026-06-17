@@ -294,4 +294,63 @@ function resetTracker() {
   render();
 }
 
+function generateSummary() {
+  const jobCount = data.jobs.length;
+  const commitCount = data.commits.length;
+  const connectionCount = data.connections.length;
+
+  const jobStatusCounts = getJobStatusCounts();
+  const statusSummary = formatStatusSummary(jobStatusCounts);
+
+  const summary = `This period I completed ${jobCount} job application${jobCount === 1 ? "" : "s"}, made ${commitCount} GitHub commit${commitCount === 1 ? "" : "s"}, and added ${connectionCount} LinkedIn connection${connectionCount === 1 ? "" : "s"}. I also continued building my Career Quota Tracker app to document my job search activity, networking progress, GitHub development work, and follow-up tasks.${statusSummary}`;
+
+  const output = document.getElementById("summaryOutput");
+
+  if (!output) return;
+
+  output.value = summary;
+}
+
+function getJobStatusCounts() {
+  return data.jobs.reduce((counts, job) => {
+    const status = job.status || "Applied";
+    counts[status] = (counts[status] || 0) + 1;
+    return counts;
+  }, {});
+}
+
+function formatStatusSummary(statusCounts) {
+  const statuses = Object.entries(statusCounts);
+
+  if (!statuses.length) {
+    return "";
+  }
+
+  const formattedStatuses = statuses
+    .map(([status, count]) => `${count} ${status}`)
+    .join(", ");
+
+  return ` Job status breakdown: ${formattedStatuses}.`;
+}
+
+function copySummary() {
+  const output = document.getElementById("summaryOutput");
+
+  if (!output || !output.value) {
+    alert("Generate a summary first.");
+    return;
+  }
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(output.value);
+    alert("Summary copied.");
+    return;
+  }
+
+  output.select();
+  document.execCommand("copy");
+  alert("Summary copied.");
+}
+
+
 render();
