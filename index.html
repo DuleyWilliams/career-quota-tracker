@@ -43,19 +43,22 @@
   <h2>Add Job Application</h2>
 
   <input id="jobCompany" placeholder="Company" />
-  <input id="jobRole" placeholder="Role" />
+<input id="jobRole" placeholder="Role" />
 
-  <select id="jobStatus">
-    <option value="Saved">Saved</option>
-    <option value="Applied" selected>Applied</option>
-    <option value="Assessment">Assessment</option>
-    <option value="Interview">Interview</option>
-    <option value="Follow Up">Follow Up</option>
-    <option value="Rejected">Rejected</option>
-    <option value="Offer">Offer</option>
-  </select>
+<select id="jobStatus">
+  <option value="Saved">Saved</option>
+  <option value="Applied" selected>Applied</option>
+  <option value="Assessment">Assessment</option>
+  <option value="Interview">Interview</option>
+  <option value="Follow Up">Follow Up</option>
+  <option value="Rejected">Rejected</option>
+  <option value="Offer">Offer</option>
+</select>
 
-  <input id="jobLink" placeholder="Job link or notes" />
+<label for="jobFollowUp">Follow-Up Date</label>
+<input type="date" id="jobFollowUp" />
+
+<input id="jobLink" placeholder="Job link or notes" />
 
   <button onclick="addJob()">Add Application</button>
 </div>
@@ -69,12 +72,24 @@
   </div>
 
   <div class="form-card">
-    <h2>Add LinkedIn Connection</h2>
-    <input id="connectionName" placeholder="Name" />
-    <input id="connectionCompany" placeholder="Company" />
-    <input id="connectionLink" placeholder="Profile link or notes" />
-    <button onclick="addConnection()">Add Connection</button>
-  </div>
+  <h2>Add LinkedIn Connection</h2>
+
+  <input id="connectionName" placeholder="Name" />
+  <input id="connectionCompany" placeholder="Company" />
+
+  <label for="connectionFollowUp">Follow-Up Date</label>
+  <input type="date" id="connectionFollowUp" />
+
+  <input id="connectionLink" placeholder="Profile link or notes" />
+
+  <button onclick="addConnection()">Add Connection</button>
+</div>
+</section>
+
+<section class="followups">
+  <h2>Follow Ups Due</h2>
+  <p>Jobs and connections with a follow-up date due today or earlier will appear here.</p>
+  <ul id="followUpList"></ul>
 </section>
 
 <section class="lists">

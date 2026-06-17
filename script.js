@@ -12,11 +12,24 @@ let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
   connections: []
 };
 
+function getInputValue(id) {
+  const element = document.getElementById(id);
+  return element ? element.value.trim() : "";
+}
+
+function setInputValue(id, value) {
+  const element = document.getElementById(id);
+  if (element) {
+    element.value = value;
+  }
+}
+
 function addJob() {
-  const company = document.getElementById("jobCompany").value.trim();
-  const role = document.getElementById("jobRole").value.trim();
-  const status = document.getElementById("jobStatus").value;
-  const link = document.getElementById("jobLink").value.trim();
+  const company = getInputValue("jobCompany");
+  const role = getInputValue("jobRole");
+  const status = getInputValue("jobStatus") || "Applied";
+  const followUpDate = getInputValue("jobFollowUp");
+  const link = getInputValue("jobLink");
 
   if (!company || !role) {
     alert("Add at least the company and role.");
@@ -27,22 +40,24 @@ function addJob() {
     company,
     role,
     status,
+    followUpDate,
     link,
     date: new Date().toLocaleDateString()
   });
 
-  document.getElementById("jobCompany").value = "";
-  document.getElementById("jobRole").value = "";
-  document.getElementById("jobStatus").value = "Applied";
-  document.getElementById("jobLink").value = "";
+  setInputValue("jobCompany", "");
+  setInputValue("jobRole", "");
+  setInputValue("jobStatus", "Applied");
+  setInputValue("jobFollowUp", "");
+  setInputValue("jobLink", "");
 
   render();
 }
 
 function addCommit() {
-  const message = document.getElementById("commitMessage").value.trim();
-  const feature = document.getElementById("commitFeature").value.trim();
-  const link = document.getElementById("commitLink").value.trim();
+  const message = getInputValue("commitMessage");
+  const feature = getInputValue("commitFeature");
+  const link = getInputValue("commitLink");
 
   if (!message) {
     alert("Add the commit message.");
@@ -56,17 +71,18 @@ function addCommit() {
     date: new Date().toLocaleDateString()
   });
 
-  document.getElementById("commitMessage").value = "";
-  document.getElementById("commitFeature").value = "";
-  document.getElementById("commitLink").value = "";
+  setInputValue("commitMessage", "");
+  setInputValue("commitFeature", "");
+  setInputValue("commitLink", "");
 
   render();
 }
 
 function addConnection() {
-  const name = document.getElementById("connectionName").value.trim();
-  const company = document.getElementById("connectionCompany").value.trim();
-  const link = document.getElementById("connectionLink").value.trim();
+  const name = getInputValue("connectionName");
+  const company = getInputValue("connectionCompany");
+  const followUpDate = getInputValue("connectionFollowUp");
+  const link = getInputValue("connectionLink");
 
   if (!name) {
     alert("Add the person's name.");
@@ -76,13 +92,15 @@ function addConnection() {
   data.connections.push({
     name,
     company,
+    followUpDate,
     link,
     date: new Date().toLocaleDateString()
   });
 
-  document.getElementById("connectionName").value = "";
-  document.getElementById("connectionCompany").value = "";
-  document.getElementById("connectionLink").value = "";
+  setInputValue("connectionName", "");
+  setInputValue("connectionCompany", "");
+  setInputValue("connectionFollowUp", "");
+  setInputValue("connectionLink", "");
 
   render();
 }
@@ -91,11 +109,15 @@ function render() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
   renderList(
-  "jobList",
-  data.jobs,
-  item => `${item.date} | ${item.status || "Applied"} | ${item.company}: ${item.role}`,
-  "jobs"
-);
+    "jobList",
+    data.jobs,
+    item => {
+      const status = item.status || "Applied";
+      const followUpText = item.followUpDate ? ` | Follow up: ${item.followUpDate}` : "";
+      return `${item.date} | ${status} | ${item.company}: ${item.role}${followUpText}`;
+    },
+    "jobs"
+  );
 
   renderList(
     "commitList",
@@ -107,17 +129,26 @@ function render() {
   renderList(
     "connectionList",
     data.connections,
-    item => `${item.date} | ${item.name} ${item.company ? "(" + item.company + ")" : ""}`,
+    item => {
+      const company = item.company ? ` (${item.company})` : "";
+      const followUpText = item.followUpDate ? ` | Follow up: ${item.followUpDate}` : "";
+      return `${item.date} | ${item.name}${company}${followUpText}`;
+    },
     "connections"
   );
 
   updateProgress("jobCount", "jobBar", data.jobs.length, goals.jobs);
   updateProgress("commitCount", "commitBar", data.commits.length, goals.commits);
   updateProgress("connectionCount", "connectionBar", data.connections.length, goals.connections);
+
+  renderFollowUps();
 }
 
 function renderList(elementId, items, formatter, type) {
   const list = document.getElementById(elementId);
+
+  if (!list) return;
+
   list.innerHTML = "";
 
   if (!items.length) {
@@ -155,11 +186,74 @@ function deleteEntry(type, index) {
 }
 
 function updateProgress(countId, barId, current, goal) {
-  document.getElementById(countId).textContent = `${current}/${goal}`;
-  document.getElementById(barId).style.width = `${Math.min((current / goal) * 100, 100)}%`;
+  const countElement = document.getElementById(countId);
+  const barElement = document.getElementById(barId);
+
+  if (!countElement || !barElement) return;
+
+  countElement.textContent = `${current}/${goal}`;
+  barElement.style.width = `${Math.min((current / goal) * 100, 100)}%`;
 }
 
-render();
+function renderFollowUps() {
+  const list = document.getElementById("followUpList");
+
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const jobFollowUps = data.jobs
+    .filter(job => job.followUpDate)
+    .map(job => ({
+      type: "Job",
+      date: job.followUpDate,
+      title: `${job.company}: ${job.role}`,
+      detail: job.status || "Applied"
+    }));
+
+  const connectionFollowUps = data.connections
+    .filter(connection => connection.followUpDate)
+    .map(connection => ({
+      type: "Connection",
+      date: connection.followUpDate,
+      title: connection.name,
+      detail: connection.company || "LinkedIn"
+    }));
+
+  const dueItems = [...jobFollowUps, ...connectionFollowUps]
+    .filter(item => {
+      const followUpDate = new Date(item.date + "T00:00:00");
+      return followUpDate <= today;
+    })
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  if (!dueItems.length) {
+    const li = document.createElement("li");
+    li.className = "empty-item";
+    li.textContent = "No follow-ups due today.";
+    list.appendChild(li);
+    return;
+  }
+
+  dueItems.forEach(item => {
+    const li = document.createElement("li");
+    li.className = "followup-item";
+
+    const type = document.createElement("span");
+    type.className = "followup-type";
+    type.textContent = item.type;
+
+    const text = document.createElement("span");
+    text.textContent = ` ${item.date} | ${item.title} | ${item.detail}`;
+
+    li.appendChild(type);
+    li.appendChild(text);
+    list.appendChild(li);
+  });
+}
 
 function exportProgress() {
   const exportData = {
@@ -199,3 +293,5 @@ function resetTracker() {
   localStorage.removeItem(STORAGE_KEY);
   render();
 }
+
+render();
