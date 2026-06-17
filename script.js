@@ -15,6 +15,7 @@ let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
 function addJob() {
   const company = document.getElementById("jobCompany").value.trim();
   const role = document.getElementById("jobRole").value.trim();
+  const status = document.getElementById("jobStatus").value;
   const link = document.getElementById("jobLink").value.trim();
 
   if (!company || !role) {
@@ -25,12 +26,14 @@ function addJob() {
   data.jobs.push({
     company,
     role,
+    status,
     link,
     date: new Date().toLocaleDateString()
   });
 
   document.getElementById("jobCompany").value = "";
   document.getElementById("jobRole").value = "";
+  document.getElementById("jobStatus").value = "Applied";
   document.getElementById("jobLink").value = "";
 
   render();
@@ -88,11 +91,11 @@ function render() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
   renderList(
-    "jobList",
-    data.jobs,
-    item => `${item.date} | ${item.company}: ${item.role}`,
-    "jobs"
-  );
+  "jobList",
+  data.jobs,
+  item => `${item.date} | ${item.status || "Applied"} | ${item.company}: ${item.role}`,
+  "jobs"
+);
 
   renderList(
     "commitList",

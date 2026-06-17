@@ -40,12 +40,25 @@
 
   <section class="forms">
   <div class="form-card">
-    <h2>Add Job Application</h2>
-    <input id="jobCompany" placeholder="Company" />
-    <input id="jobRole" placeholder="Role" />
-    <input id="jobLink" placeholder="Job link or notes" />
-    <button onclick="addJob()">Add Application</button>
-  </div>
+  <h2>Add Job Application</h2>
+
+  <input id="jobCompany" placeholder="Company" />
+  <input id="jobRole" placeholder="Role" />
+
+  <select id="jobStatus">
+    <option value="Saved">Saved</option>
+    <option value="Applied" selected>Applied</option>
+    <option value="Assessment">Assessment</option>
+    <option value="Interview">Interview</option>
+    <option value="Follow Up">Follow Up</option>
+    <option value="Rejected">Rejected</option>
+    <option value="Offer">Offer</option>
+  </select>
+
+  <input id="jobLink" placeholder="Job link or notes" />
+
+  <button onclick="addJob()">Add Application</button>
+</div>
 
   <div class="form-card">
     <h2>Add GitHub Commit</h2>
