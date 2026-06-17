@@ -90,19 +90,22 @@ function render() {
   renderList(
     "jobList",
     data.jobs,
-    item => `${item.date} | ${item.company}: ${item.role}`
+    item => `${item.date} | ${item.company}: ${item.role}`,
+    "jobs"
   );
 
   renderList(
     "commitList",
     data.commits,
-    item => `${item.date} | ${item.message}`
+    item => `${item.date} | ${item.message}`,
+    "commits"
   );
 
   renderList(
     "connectionList",
     data.connections,
-    item => `${item.date} | ${item.name} ${item.company ? "(" + item.company + ")" : ""}`
+    item => `${item.date} | ${item.name} ${item.company ? "(" + item.company + ")" : ""}`,
+    "connections"
   );
 
   updateProgress("jobCount", "jobBar", data.jobs.length, goals.jobs);
@@ -110,15 +113,42 @@ function render() {
   updateProgress("connectionCount", "connectionBar", data.connections.length, goals.connections);
 }
 
-function renderList(elementId, items, formatter) {
+function renderList(elementId, items, formatter, type) {
   const list = document.getElementById(elementId);
   list.innerHTML = "";
 
-  items.forEach(item => {
+  if (!items.length) {
     const li = document.createElement("li");
-    li.textContent = formatter(item);
+    li.className = "empty-item";
+    li.textContent = "No entries added yet.";
+    list.appendChild(li);
+    return;
+  }
+
+  items.forEach((item, index) => {
+    const li = document.createElement("li");
+    li.className = "list-item";
+
+    const text = document.createElement("span");
+    text.textContent = formatter(item);
+
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "delete-btn";
+    deleteButton.textContent = "Delete";
+    deleteButton.onclick = () => deleteEntry(type, index);
+
+    li.appendChild(text);
+    li.appendChild(deleteButton);
     list.appendChild(li);
   });
+}
+
+function deleteEntry(type, index) {
+  const confirmed = confirm("Delete this entry?");
+  if (!confirmed) return;
+
+  data[type].splice(index, 1);
+  render();
 }
 
 function updateProgress(countId, barId, current, goal) {

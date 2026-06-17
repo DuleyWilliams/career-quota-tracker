@@ -178,3 +178,28 @@ button.dark {
     width: 100%;
   }
 }
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.list-item span {
+  flex: 1;
+}
+
+.delete-btn {
+  width: auto;
+  background: #222;
+  color: #fff;
+  padding: 7px 12px;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.empty-item {
+  color: var(--muted);
+  font-style: italic;
+}
