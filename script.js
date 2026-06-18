@@ -6,6 +6,13 @@ const goals = {
 
 const STORAGE_KEY = "careerQuotaTrackerData";
 
+const PERIOD_KEY = "careerQuotaTrackerPeriod";
+
+let reportingPeriod = JSON.parse(localStorage.getItem(PERIOD_KEY)) || {
+  start: "",
+  end: ""
+};
+
 let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
   jobs: [],
   commits: [],
@@ -142,6 +149,7 @@ function render() {
   updateProgress("connectionCount", "connectionBar", data.connections.length, goals.connections);
 
   renderFollowUps();
+  renderReportingPeriod();
 }
 
 function renderList(elementId, items, formatter, type) {
@@ -471,6 +479,130 @@ function downloadCSV(filename, csvContent) {
   link.click();
 
   URL.revokeObjectURL(url);
+}
+
+function saveReportingPeriod() {
+  const start = document.getElementById("periodStart").value;
+  const end = document.getElementById("periodEnd").value;
+
+  if (!start || !end) {
+    alert("Add both a start date and an end date.");
+    return;
+  }
+
+  if (new Date(start) > new Date(end)) {
+    alert("The start date cannot be after the end date.");
+    return;
+  }
+
+  reportingPeriod = {
+    start,
+    end
+  };
+
+  localStorage.setItem(PERIOD_KEY, JSON.stringify(reportingPeriod));
+  renderReportingPeriod();
+}
+
+function renderReportingPeriod() {
+  const startInput = document.getElementById("periodStart");
+  const endInput = document.getElementById("periodEnd");
+  const summary = document.getElementById("periodSummary");
+
+  if (!startInput || !endInput || !summary) return;
+
+  startInput.value = reportingPeriod.start || "";
+  endInput.value = reportingPeriod.end || "";
+
+  if (!reportingPeriod.start || !reportingPeriod.end) {
+    summary.textContent = "No reporting period saved yet.";
+    return;
+  }
+
+  const periodJobs = getItemsInReportingPeriod(data.jobs);
+  const periodCommits = getItemsInReportingPeriod(data.commits);
+  const periodConnections = getItemsInReportingPeriod(data.connections);
+
+  const daysRemaining = getDaysRemaining(reportingPeriod.end);
+
+  summary.innerHTML = `
+    <div class="period-summary-grid">
+      <div class="period-box">
+        <span>Period</span>
+        <strong>${reportingPeriod.start} to ${reportingPeriod.end}</strong>
+        <div class="period-status ${daysRemaining > 0 ? "not-met" : "met"}">
+          ${daysRemaining > 0 ? `${daysRemaining} day${daysRemaining === 1 ? "" : "s"} remaining` : "Period ended"}
+        </div>
+      </div>
+
+      <div class="period-box">
+        <span>Applications</span>
+        <strong>${periodJobs.length}/${goals.jobs}</strong>
+        ${getPeriodStatus(periodJobs.length, goals.jobs)}
+      </div>
+
+      <div class="period-box">
+        <span>GitHub Commits</span>
+        <strong>${periodCommits.length}/${goals.commits}</strong>
+        ${getPeriodStatus(periodCommits.length, goals.commits)}
+      </div>
+
+      <div class="period-box">
+        <span>Connections</span>
+        <strong>${periodConnections.length}/${goals.connections}</strong>
+        ${getPeriodStatus(periodConnections.length, goals.connections)}
+      </div>
+    </div>
+  `;
+}
+
+function getItemsInReportingPeriod(items) {
+  if (!reportingPeriod.start || !reportingPeriod.end) {
+    return items;
+  }
+
+  const startDate = new Date(reportingPeriod.start + "T00:00:00");
+  const endDate = new Date(reportingPeriod.end + "T23:59:59");
+
+  return items.filter(item => {
+    const itemDate = parseSavedDate(item.date);
+
+    if (!itemDate) return false;
+
+    return itemDate >= startDate && itemDate <= endDate;
+  });
+}
+
+function parseSavedDate(value) {
+  if (!value) return null;
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date;
+}
+
+function getDaysRemaining(endDateValue) {
+  const today = new Date();
+  const endDate = new Date(endDateValue + "T23:59:59");
+
+  const difference = endDate - today;
+  const days = Math.ceil(difference / (1000 * 60 * 60 * 24));
+
+  return Math.max(days, 0);
+}
+
+function getPeriodStatus(current, goal) {
+  const met = current >= goal;
+
+  return `
+    <div class="period-status ${met ? "met" : "not-met"}">
+      ${met ? "Requirement met" : "Below requirement"}
+    </div>
+  `;
 }
 
 render();

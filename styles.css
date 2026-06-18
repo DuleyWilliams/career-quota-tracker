@@ -319,3 +319,101 @@ label {
 .toolbar button {
   margin-bottom: 8px;
 }
+
+.period-panel {
+  padding: 28px 40px 32px;
+}
+
+.period-panel p {
+  color: var(--muted);
+  margin-top: -6px;
+}
+
+.period-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.period-form label {
+  display: block;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.period-form button {
+  width: auto;
+}
+
+.period-summary {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--soft);
+  padding: 18px;
+}
+
+.period-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.period-box {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.period-box span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.period-box strong {
+  display: block;
+  font-size: 24px;
+}
+
+.period-status {
+  display: inline-block;
+  margin-top: 8px;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.period-status.met {
+  background: #eaf7ef;
+  color: #1b7f3a;
+}
+
+.period-status.not-met {
+  background: #fff2e6;
+  color: #c45a00;
+}
+
+@media (max-width: 850px) {
+  .period-panel {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .period-form,
+  .period-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .period-form button {
+    width: 100%;
+  }
+}

@@ -22,6 +22,30 @@
   <button onclick="resetTracker()" class="dark">Reset Tracker</button>
 </section>
 
+<section class="period-panel">
+  <h2>Bi-Weekly Reporting Period</h2>
+  <p>Set the current NSS reporting window and track whether your activity meets the requirement for this period.</p>
+
+  <div class="period-form">
+    <div>
+      <label for="periodStart">Start Date</label>
+      <input type="date" id="periodStart" />
+    </div>
+
+    <div>
+      <label for="periodEnd">End Date</label>
+      <input type="date" id="periodEnd" />
+    </div>
+
+    <button onclick="saveReportingPeriod()">Save Period</button>
+  </div>
+
+  <div id="periodSummary" class="period-summary">
+    No reporting period saved yet.
+  </div>
+</section>
+
+
   <section class="dashboard">
     <article class="card">
       <span class="label">Job Applications</span>
