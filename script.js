@@ -352,5 +352,125 @@ function copySummary() {
   alert("Summary copied.");
 }
 
+function exportCSV(type) {
+  let rows = [];
+  let filename = "";
+
+  if (type === "jobs") {
+    filename = "career-tracker-jobs.csv";
+    rows = data.jobs.map(job => ({
+      Type: "Job",
+      Date: job.date || "",
+      Company: job.company || "",
+      Role: job.role || "",
+      Status: job.status || "Applied",
+      FollowUpDate: job.followUpDate || "",
+      LinkOrNotes: job.link || ""
+    }));
+  }
+
+  if (type === "connections") {
+    filename = "career-tracker-connections.csv";
+    rows = data.connections.map(connection => ({
+      Type: "Connection",
+      Date: connection.date || "",
+      Name: connection.name || "",
+      Company: connection.company || "",
+      FollowUpDate: connection.followUpDate || "",
+      LinkOrNotes: connection.link || ""
+    }));
+  }
+
+  if (type === "commits") {
+    filename = "career-tracker-commits.csv";
+    rows = data.commits.map(commit => ({
+      Type: "Commit",
+      Date: commit.date || "",
+      Message: commit.message || "",
+      FeatureArea: commit.feature || "",
+      LinkOrNotes: commit.link || ""
+    }));
+  }
+
+  if (type === "all") {
+    filename = "career-tracker-full-report.csv";
+
+    const jobRows = data.jobs.map(job => ({
+      Type: "Job",
+      Date: job.date || "",
+      NameOrCompany: job.company || "",
+      RoleOrMessage: job.role || "",
+      StatusOrFeature: job.status || "Applied",
+      FollowUpDate: job.followUpDate || "",
+      LinkOrNotes: job.link || ""
+    }));
+
+    const connectionRows = data.connections.map(connection => ({
+      Type: "Connection",
+      Date: connection.date || "",
+      NameOrCompany: connection.name || "",
+      RoleOrMessage: connection.company || "",
+      StatusOrFeature: "",
+      FollowUpDate: connection.followUpDate || "",
+      LinkOrNotes: connection.link || ""
+    }));
+
+    const commitRows = data.commits.map(commit => ({
+      Type: "Commit",
+      Date: commit.date || "",
+      NameOrCompany: "",
+      RoleOrMessage: commit.message || "",
+      StatusOrFeature: commit.feature || "",
+      FollowUpDate: "",
+      LinkOrNotes: commit.link || ""
+    }));
+
+    rows = [...jobRows, ...connectionRows, ...commitRows];
+  }
+
+  if (!rows.length) {
+    alert("No data available to export.");
+    return;
+  }
+
+  const csv = convertRowsToCSV(rows);
+  downloadCSV(filename, csv);
+}
+
+function convertRowsToCSV(rows) {
+  const headers = Object.keys(rows[0]);
+
+  const csvRows = [
+    headers.join(","),
+    ...rows.map(row => {
+      return headers
+        .map(header => csvEscape(row[header]))
+        .join(",");
+    })
+  ];
+
+  return csvRows.join("\n");
+}
+
+function csvEscape(value) {
+  const stringValue = String(value ?? "");
+  const escapedValue = stringValue.replace(/"/g, '""');
+  return `"${escapedValue}"`;
+}
+
+function downloadCSV(filename, csvContent) {
+  const blob = new Blob([csvContent], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
 
 render();

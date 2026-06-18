@@ -13,10 +13,14 @@
     <p>Track job applications, GitHub commits, and LinkedIn connections for NSS career development.</p>
   </header>
 
-  <section class="toolbar">
-    <button onclick="exportProgress()">Export Progress JSON</button>
-    <button onclick="resetTracker()" class="dark">Reset Tracker</button>
-  </section>
+<section class="toolbar">
+  <button onclick="exportProgress()">Export Progress JSON</button>
+  <button onclick="exportCSV('jobs')">Export Jobs CSV</button>
+  <button onclick="exportCSV('connections')">Export Connections CSV</button>
+  <button onclick="exportCSV('commits')">Export Commits CSV</button>
+  <button onclick="exportCSV('all')">Export Full Report CSV</button>
+  <button onclick="resetTracker()" class="dark">Reset Tracker</button>
+</section>
 
   <section class="dashboard">
     <article class="card">

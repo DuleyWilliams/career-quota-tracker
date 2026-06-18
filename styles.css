@@ -311,3 +311,11 @@ label {
     width: 100%;
   }
 }
+
+.toolbar {
+  flex-wrap: wrap;
+}
+
+.toolbar button {
+  margin-bottom: 8px;
+}
