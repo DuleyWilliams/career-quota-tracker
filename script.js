@@ -5,8 +5,23 @@ const goals = {
 };
 
 const STORAGE_KEY = "careerQuotaTrackerData";
-
+const PROFILE_KEY = "careerQuotaTrackerNssProfile";
 const PERIOD_KEY = "careerQuotaTrackerPeriod";
+
+let nssProfile = {
+  name: "",
+  email: "",
+  studentId: "",
+  phone: "",
+  cohort: "",
+  opportunityTuition: "",
+  currentlyWorking: "",
+  jobSearchStatus: "",
+  techEmployment: "",
+  employerInfo: "",
+  githubRepo: "",
+  liveProject: ""
+};
 
 let reportingPeriod = JSON.parse(localStorage.getItem(PERIOD_KEY)) || {
   start: "",
@@ -150,6 +165,7 @@ function render() {
 
   renderFollowUps();
   renderReportingPeriod();
+  renderNssProfile();
 }
 
 function renderList(elementId, items, formatter, type) {
@@ -603,6 +619,134 @@ function getPeriodStatus(current, goal) {
       ${met ? "Requirement met" : "Below requirement"}
     </div>
   `;
+}
+
+function getEmptyNssProfile() {
+  return {
+    name: "",
+    email: "",
+    studentId: "",
+    phone: "",
+    cohort: "",
+    opportunityTuition: "",
+    currentlyWorking: "",
+    jobSearchStatus: "",
+    techEmployment: "",
+    employerInfo: "",
+    githubRepo: "",
+    liveProject: ""
+  };
+}
+
+function loadNssProfile() {
+  const savedProfile = localStorage.getItem(PROFILE_KEY);
+
+  if (!savedProfile) {
+    nssProfile = getEmptyNssProfile();
+    return;
+  }
+
+  try {
+    nssProfile = JSON.parse(savedProfile);
+  } catch (error) {
+    console.error("Could not load NSS profile:", error);
+    nssProfile = getEmptyNssProfile();
+  }
+}
+
+function saveNssProfile() {
+  const profileToSave = {
+    name: getProfileValue("nssName"),
+    email: getProfileValue("nssEmail"),
+    studentId: getProfileValue("nssStudentId"),
+    phone: getProfileValue("nssPhone"),
+    cohort: getProfileValue("nssCohort"),
+    opportunityTuition: getProfileValue("nssOpportunityTuition"),
+    currentlyWorking: getProfileValue("nssCurrentlyWorking"),
+    jobSearchStatus: getProfileValue("nssJobSearchStatus"),
+    techEmployment: getProfileValue("nssTechEmployment"),
+    employerInfo: getProfileValue("nssEmployerInfo"),
+    githubRepo: getProfileValue("nssGithubRepo"),
+    liveProject: getProfileValue("nssLiveProject")
+  };
+
+  nssProfile = profileToSave;
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profileToSave));
+
+  renderNssProfile();
+  showProfileSaveStatus("Profile settings saved.", true);
+}
+
+function clearNssProfile() {
+  const confirmed = confirm("Clear saved NSS profile settings?");
+  if (!confirmed) return;
+
+  nssProfile = getEmptyNssProfile();
+  localStorage.removeItem(PROFILE_KEY);
+
+  renderNssProfile();
+  showProfileSaveStatus("Profile settings cleared.", false);
+}
+
+function renderNssProfile() {
+  loadNssProfile();
+
+  setProfileValue("nssName", nssProfile.name);
+  setProfileValue("nssEmail", nssProfile.email);
+  setProfileValue("nssStudentId", nssProfile.studentId);
+  setProfileValue("nssPhone", nssProfile.phone);
+  setProfileValue("nssCohort", nssProfile.cohort);
+  setProfileValue("nssOpportunityTuition", nssProfile.opportunityTuition);
+  setProfileValue("nssCurrentlyWorking", nssProfile.currentlyWorking);
+  setProfileValue("nssJobSearchStatus", nssProfile.jobSearchStatus);
+  setProfileValue("nssTechEmployment", nssProfile.techEmployment);
+  setProfileValue("nssEmployerInfo", nssProfile.employerInfo);
+  setProfileValue("nssGithubRepo", nssProfile.githubRepo);
+  setProfileValue("nssLiveProject", nssProfile.liveProject);
+
+  const hasSavedProfile = Object.values(nssProfile).some(value => value);
+
+  if (hasSavedProfile) {
+    showProfileSaveStatus("Profile settings loaded.", true);
+  } else {
+    showProfileSaveStatus("Profile settings have not been saved yet.", false);
+  }
+}
+
+function getProfileValue(id) {
+  const element = document.getElementById(id);
+
+  if (!element) {
+    console.warn(`Missing profile field: ${id}`);
+    return "";
+  }
+
+  return element.value.trim();
+}
+
+function setProfileValue(id, value) {
+  const element = document.getElementById(id);
+
+  if (!element) {
+    console.warn(`Missing profile field: ${id}`);
+    return;
+  }
+
+  element.value = value || "";
+}
+
+function showProfileSaveStatus(message, saved) {
+  const status = document.getElementById("profileSaveStatus");
+
+  if (!status) return;
+
+  status.textContent = message;
+
+  if (saved) {
+    status.classList.add("saved");
+  } else {
+    status.classList.remove("saved");
+  }
 }
 
 render();

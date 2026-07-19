@@ -45,6 +45,99 @@
   </div>
 </section>
 
+<section class="profile-panel">
+  <h2>NSS Profile Settings</h2>
+  <p>Save recurring NSS form information so you do not have to retype it every two weeks.</p>
+
+  <div class="profile-grid">
+    <div>
+      <label for="nssName">Name</label>
+      <input type="text" id="nssName" placeholder="Your full name" />
+    </div>
+
+    <div>
+      <label for="nssEmail">Email</label>
+      <input type="email" id="nssEmail" placeholder="Your email" />
+    </div>
+
+    <div>
+      <label for="nssStudentId">Student ID</label>
+      <input type="text" id="nssStudentId" placeholder="Student ID" />
+    </div>
+
+    <div>
+      <label for="nssPhone">Phone Number</label>
+      <input type="tel" id="nssPhone" placeholder="Phone number" />
+    </div>
+
+    <div>
+      <label for="nssCohort">Cohort</label>
+      <input type="text" id="nssCohort" placeholder="Example: Evening 17" />
+    </div>
+
+    <div>
+      <label for="nssOpportunityTuition">Opportunity Tuition Program</label>
+      <select id="nssOpportunityTuition">
+        <option value="">Select one</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="nssCurrentlyWorking">Currently Working</label>
+      <select id="nssCurrentlyWorking">
+        <option value="">Select one</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="nssJobSearchStatus">Job Search Status</label>
+      <select id="nssJobSearchStatus">
+        <option value="">Select status</option>
+        <option value="Applying">Applying</option>
+        <option value="Interviewing">Interviewing</option>
+        <option value="Offer Pending">Offer Pending</option>
+        <option value="Hired">Hired</option>
+        <option value="Job Search On Hold">Job Search On Hold</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="nssTechEmployment">Tech Employment Since Demo Day</label>
+      <select id="nssTechEmployment">
+        <option value="">Select one</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+        <option value="N/A">N/A</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="nssEmployerInfo">Employer Address and Phone</label>
+      <input type="text" id="nssEmployerInfo" placeholder="N/A or employer info" />
+    </div>
+
+    <div>
+      <label for="nssGithubRepo">GitHub Repo Link</label>
+      <input type="url" id="nssGithubRepo" placeholder="https://github.com/..." />
+    </div>
+
+    <div>
+      <label for="nssLiveProject">Live Project Link</label>
+      <input type="url" id="nssLiveProject" placeholder="https://..." />
+    </div>
+  </div>
+
+  <div class="profile-actions">
+    <button onclick="saveNssProfile()">Save Profile Settings</button>
+    <button onclick="clearNssProfile()" class="dark">Clear Profile Settings</button>
+  </div>
+
+  <p id="profileSaveStatus" class="save-status">Profile settings have not been saved yet.</p>
+</section>
 
   <section class="dashboard">
     <article class="card">

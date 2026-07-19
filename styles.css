@@ -417,3 +417,86 @@ label {
     width: 100%;
   }
 }
+
+.profile-panel {
+  padding: 28px 40px 32px;
+  border-bottom: 1px solid var(--line);
+}
+
+.profile-panel p {
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.profile-grid label {
+  display: block;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.profile-grid input,
+.profile-grid select {
+  width: 100%;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.profile-actions button {
+  width: auto;
+}
+
+.save-status {
+  margin-top: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.save-status.saved {
+  color: #1b7f3a;
+}
+
+@media (max-width: 850px) {
+  .profile-panel {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-actions button {
+    width: 100%;
+  }
+}
+
+.profile-actions {
+  margin-bottom: 14px;
+}
+
+.save-status {
+  display: block;
+  clear: both;
+  margin-top: 14px;
+  margin-bottom: 0;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.save-status.saved {
+  color: #1b7f3a;
+}
