@@ -862,11 +862,7 @@ function showProfileSaveStatus(message, saved) {
   }
 }
 
-function generateNssFormHelper() {
-  const output = document.getElementById("nssFormHelperOutput");
-
-  if (!output) return;
-
+function getNssFormHelperFields() {
   const periodJobs = getItemsInReportingPeriod(data.jobs);
   const periodCommits = getItemsInReportingPeriod(data.commits);
   const periodConnections = getItemsInReportingPeriod(data.connections);
@@ -889,7 +885,31 @@ function generateNssFormHelper() {
     return job.status === "Offer" || job.offerNotes;
   });
 
-  const skillsSharpAnswer = buildSkillsSharpAnswer(periodCommits);
+  return {
+    skillsSharp: buildSkillsSharpAnswer(periodCommits),
+    connectionsCount: String(periodConnections.length),
+    connectionsList: formatConnectionList(periodConnections),
+    eventsList: formatEventList(periodEvents),
+    applicationsCount: String(appliedJobs.length),
+    applicationsList: formatJobCompanyList(appliedJobs),
+    interviewsCount: String(interviews.length),
+    interviewsList: formatInterviewList(interviews),
+    technicalChallenge: technicalChallenges.length > 0 ? "Yes" : "No",
+    technicalChallengeDetails: formatTechnicalChallengeList(technicalChallenges),
+    challengeCompleted: formatChallengeCompletionAnswer(technicalChallenges),
+    offersList: formatOfferList(offers),
+    githubActivity: `GitHub commits logged this period: ${periodCommits.length}\n${formatCommitList(periodCommits)}`
+  };
+}
+
+function generateNssFormHelper() {
+  const output = document.getElementById("nssFormHelperOutput");
+
+  if (!output) return;
+
+  loadNssProfile();
+
+  const fields = getNssFormHelperFields();
 
   const helperText = [
     "NSS JOB SEARCH UPDATE FORM ANSWERS",
@@ -910,50 +930,50 @@ function generateNssFormHelper() {
     "",
     "WHAT ARE YOU DOING TO KEEP YOUR SKILLS SHARP?",
     "--------------------------------------------",
-    skillsSharpAnswer,
+    fields.skillsSharp,
     "",
     "NETWORKING",
     "----------",
-    `How many professional connections have you made since your last update?`,
-    `${periodConnections.length}`,
+    "How many professional connections have you made since your last update?",
+    fields.connectionsCount,
     "",
     "List professional connections as a result of networking, one name per line:",
-    formatConnectionList(periodConnections),
+    fields.connectionsList,
     "",
     "What networking events have you attended since your last update?",
-    formatEventList(periodEvents),
+    fields.eventsList,
     "",
     "APPLICATIONS",
     "------------",
     "How many companies have you applied to since your last update?",
-    `${appliedJobs.length}`,
+    fields.applicationsCount,
     "",
     "List companies applied to, one company per line:",
-    formatJobCompanyList(appliedJobs),
+    fields.applicationsList,
     "",
     "INTERVIEWS",
     "----------",
     "How many interviews have you scheduled since your last update?",
-    `${interviews.length}`,
+    fields.interviewsCount,
     "",
     "List interviews scheduled with date/phase, one company per line:",
-    formatInterviewList(interviews),
+    fields.interviewsList,
     "",
     "TECHNICAL INTERVIEWS / CODE CHALLENGES",
     "--------------------------------------",
     "Have you had any technical interviews/code challenges?",
-    technicalChallenges.length > 0 ? "Yes" : "No",
+    fields.technicalChallenge,
     "",
     "Technical interview/code challenge details:",
-    formatTechnicalChallengeList(technicalChallenges),
+    fields.technicalChallengeDetails,
     "",
     "If completed technical interview/code challenge, did you finish within timeframe?",
-    formatChallengeCompletionAnswer(technicalChallenges),
+    fields.challengeCompleted,
     "",
     "OFFERS",
     "------",
     "Received any offers? Tell who from and if declined/considering.",
-    formatOfferList(offers),
+    fields.offersList,
     "",
     "PROJECT LINKS",
     "-------------",
@@ -962,8 +982,7 @@ function generateNssFormHelper() {
     "",
     "GITHUB ACTIVITY",
     "---------------",
-    `GitHub commits logged this period: ${periodCommits.length}`,
-    formatCommitList(periodCommits)
+    fields.githubActivity
   ].join("\n");
 
   output.value = helperText;
@@ -1109,4 +1128,34 @@ function copyNssFormHelper() {
   alert("NSS form answers copied.");
 }
 
+function copyHelperField(fieldName) {
+  loadNssProfile();
+
+  const fields = getNssFormHelperFields();
+  const value = fields[fieldName];
+
+  if (!value) {
+    alert("No value available for this field yet.");
+    return;
+  }
+
+  copyTextToClipboard(value, "Field copied.");
+}
+
+function copyTextToClipboard(text, successMessage) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+    alert(successMessage);
+    return;
+  }
+
+  const temporaryTextArea = document.createElement("textarea");
+  temporaryTextArea.value = text;
+  document.body.appendChild(temporaryTextArea);
+  temporaryTextArea.select();
+  document.execCommand("copy");
+  document.body.removeChild(temporaryTextArea);
+
+  alert(successMessage);
+}
 render();
