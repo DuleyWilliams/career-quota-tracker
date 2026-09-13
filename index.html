@@ -3,246 +3,291 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Career Quota Tracker</title>
+
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
- <main class="app">
-  <header class="hero">
-    <h1>Career Quota Tracker</h1>
-    <p>Track job applications, GitHub commits, and LinkedIn connections for NSS career development.</p>
-  </header>
+  <main class="app">
+    <header class="hero">
+      <h1>Career Quota Tracker</h1>
+      <p>Track job applications, GitHub commits, and LinkedIn connections for NSS career development.</p>
+    </header>
 
-<section class="toolbar">
-  <button onclick="exportProgress()">Export Progress JSON</button>
-  <button onclick="exportCSV('jobs')">Export Jobs CSV</button>
-  <button onclick="exportCSV('connections')">Export Connections CSV</button>
-  <button onclick="exportCSV('commits')">Export Commits CSV</button>
-  <button onclick="exportCSV('all')">Export Full Report CSV</button>
-  <button onclick="resetTracker()" class="dark">Reset Tracker</button>
-</section>
+    <section class="toolbar">
+      <button onclick="exportProgress()">Export Progress JSON</button>
+      <button onclick="exportCSV('jobs')">Export Jobs CSV</button>
+      <button onclick="exportCSV('connections')">Export Connections CSV</button>
+      <button onclick="exportCSV('commits')">Export Commits CSV</button>
+      <button onclick="exportCSV('events')">Export Events CSV</button>
+      <button onclick="exportCSV('all')">Export Full Report CSV</button>
+      <button onclick="resetTracker()" class="dark">Reset Tracker</button>
+    </section>
 
-<section class="period-panel">
-  <h2>Bi-Weekly Reporting Period</h2>
-  <p>Set the current NSS reporting window and track whether your activity meets the requirement for this period.</p>
+    <section class="period-panel">
+      <h2>Bi-Weekly Reporting Period</h2>
+      <p>Set the current NSS reporting window and track whether your activity meets the requirement for this period.</p>
 
-  <div class="period-form">
-    <div>
-      <label for="periodStart">Start Date</label>
-      <input type="date" id="periodStart" />
-    </div>
+      <div class="period-form">
+        <div>
+          <label for="periodStart">Start Date</label>
+          <input type="date" id="periodStart" />
+        </div>
 
-    <div>
-      <label for="periodEnd">End Date</label>
-      <input type="date" id="periodEnd" />
-    </div>
+        <div>
+          <label for="periodEnd">End Date</label>
+          <input type="date" id="periodEnd" />
+        </div>
 
-    <button onclick="saveReportingPeriod()">Save Period</button>
-  </div>
+        <button onclick="saveReportingPeriod()">Save Period</button>
+      </div>
 
-  <div id="periodSummary" class="period-summary">
-    No reporting period saved yet.
-  </div>
-</section>
+      <div id="periodSummary" class="period-summary">
+        No reporting period saved yet.
+      </div>
+    </section>
 
-<section class="profile-panel">
-  <h2>NSS Profile Settings</h2>
-  <p>Save recurring NSS form information so you do not have to retype it every two weeks.</p>
+    <section class="profile-panel">
+      <h2>NSS Profile Settings</h2>
+      <p>Save recurring NSS form information so you do not have to retype it every two weeks.</p>
 
-  <div class="profile-grid">
-    <div>
-      <label for="nssName">Name</label>
-      <input type="text" id="nssName" placeholder="Your full name" />
-    </div>
+      <div class="profile-grid">
+        <div>
+          <label for="nssName">Name</label>
+          <input type="text" id="nssName" placeholder="Your full name" />
+        </div>
 
-    <div>
-      <label for="nssEmail">Email</label>
-      <input type="email" id="nssEmail" placeholder="Your email" />
-    </div>
+        <div>
+          <label for="nssEmail">Email</label>
+          <input type="email" id="nssEmail" placeholder="Your email" />
+        </div>
 
-    <div>
-      <label for="nssStudentId">Student ID</label>
-      <input type="text" id="nssStudentId" placeholder="Student ID" />
-    </div>
+        <div>
+          <label for="nssStudentId">Student ID</label>
+          <input type="text" id="nssStudentId" placeholder="Student ID" />
+        </div>
 
-    <div>
-      <label for="nssPhone">Phone Number</label>
-      <input type="tel" id="nssPhone" placeholder="Phone number" />
-    </div>
+        <div>
+          <label for="nssPhone">Phone Number</label>
+          <input type="tel" id="nssPhone" placeholder="Phone number" />
+        </div>
 
-    <div>
-      <label for="nssCohort">Cohort</label>
-      <input type="text" id="nssCohort" placeholder="Example: Evening 17" />
-    </div>
+        <div>
+          <label for="nssCohort">Cohort</label>
+          <input type="text" id="nssCohort" placeholder="Example: Evening 17" />
+        </div>
 
-    <div>
-      <label for="nssOpportunityTuition">Opportunity Tuition Program</label>
-      <select id="nssOpportunityTuition">
-        <option value="">Select one</option>
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-      </select>
-    </div>
+        <div>
+          <label for="nssOpportunityTuition">Opportunity Tuition Program</label>
+          <select id="nssOpportunityTuition">
+            <option value="">Select one</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
 
-    <div>
-      <label for="nssCurrentlyWorking">Currently Working</label>
-      <select id="nssCurrentlyWorking">
-        <option value="">Select one</option>
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-      </select>
-    </div>
+        <div>
+          <label for="nssCurrentlyWorking">Currently Working</label>
+          <select id="nssCurrentlyWorking">
+            <option value="">Select one</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
 
-    <div>
-      <label for="nssJobSearchStatus">Job Search Status</label>
-      <select id="nssJobSearchStatus">
-        <option value="">Select status</option>
-        <option value="Applying">Applying</option>
-        <option value="Interviewing">Interviewing</option>
-        <option value="Offer Pending">Offer Pending</option>
-        <option value="Hired">Hired</option>
-        <option value="Job Search On Hold">Job Search On Hold</option>
-      </select>
-    </div>
+        <div>
+          <label for="nssJobSearchStatus">Job Search Status</label>
+          <select id="nssJobSearchStatus">
+            <option value="">Select status</option>
+            <option value="Applying">Applying</option>
+            <option value="Interviewing">Interviewing</option>
+            <option value="Offer Pending">Offer Pending</option>
+            <option value="Hired">Hired</option>
+            <option value="Job Search On Hold">Job Search On Hold</option>
+          </select>
+        </div>
 
-    <div>
-      <label for="nssTechEmployment">Tech Employment Since Demo Day</label>
-      <select id="nssTechEmployment">
-        <option value="">Select one</option>
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-        <option value="N/A">N/A</option>
-      </select>
-    </div>
+        <div>
+          <label for="nssTechEmployment">Tech Employment Since Demo Day</label>
+          <select id="nssTechEmployment">
+            <option value="">Select one</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+            <option value="N/A">N/A</option>
+          </select>
+        </div>
 
-    <div>
-      <label for="nssEmployerInfo">Employer Address and Phone</label>
-      <input type="text" id="nssEmployerInfo" placeholder="N/A or employer info" />
-    </div>
+        <div>
+          <label for="nssEmployerInfo">Employer Address and Phone</label>
+          <input type="text" id="nssEmployerInfo" placeholder="N/A or employer info" />
+        </div>
 
-    <div>
-      <label for="nssGithubRepo">GitHub Repo Link</label>
-      <input type="url" id="nssGithubRepo" placeholder="https://github.com/..." />
-    </div>
+        <div>
+          <label for="nssGithubRepo">GitHub Repo Link</label>
+          <input type="url" id="nssGithubRepo" placeholder="https://github.com/DuleyWilliams/career-quota-tracker" />
+        </div>
 
-    <div>
-      <label for="nssLiveProject">Live Project Link</label>
-      <input type="url" id="nssLiveProject" placeholder="https://..." />
-    </div>
-  </div>
+        <div>
+          <label for="nssLiveProject">Live Project Link</label>
+          <input type="url" id="nssLiveProject" placeholder="https://duleywilliams.github.io/career-quota-tracker/" />
+        </div>
+      </div>
 
-  <div class="profile-actions">
-    <button onclick="saveNssProfile()">Save Profile Settings</button>
-    <button onclick="clearNssProfile()" class="dark">Clear Profile Settings</button>
-  </div>
+      <div class="profile-actions">
+        <button onclick="saveNssProfile()">Save Profile Settings</button>
+        <button onclick="clearNssProfile()" class="dark">Clear Profile Settings</button>
+      </div>
 
-  <p id="profileSaveStatus" class="save-status">Profile settings have not been saved yet.</p>
-</section>
+      <p id="profileSaveStatus" class="save-status">
+        Profile settings have not been saved yet.
+      </p>
+    </section>
 
-  <section class="dashboard">
-    <article class="card">
-      <span class="label">Job Applications</span>
-      <strong id="jobCount">0/4</strong>
-      <div class="bar"><div id="jobBar"></div></div>
-    </article>
+    <section class="dashboard">
+      <article class="card">
+        <span class="label">Job Applications</span>
+        <strong id="jobCount">0/4</strong>
+        <div class="bar">
+          <div id="jobBar"></div>
+        </div>
+      </article>
 
-    <article class="card">
-      <span class="label">GitHub Commits</span>
-      <strong id="commitCount">0/6</strong>
-      <div class="bar"><div id="commitBar"></div></div>
-    </article>
+      <article class="card">
+        <span class="label">GitHub Commits</span>
+        <strong id="commitCount">0/6</strong>
+        <div class="bar">
+          <div id="commitBar"></div>
+        </div>
+      </article>
 
-    <article class="card">
-      <span class="label">LinkedIn Connections</span>
-      <strong id="connectionCount">0/8</strong>
-      <div class="bar"><div id="connectionBar"></div></div>
-    </article>
-  </section>
+      <article class="card">
+        <span class="label">LinkedIn Connections</span>
+        <strong id="connectionCount">0/8</strong>
+        <div class="bar">
+          <div id="connectionBar"></div>
+        </div>
+      </article>
+    </section>
 
-  <section class="forms">
-  <div class="form-card">
-  <h2>Add Job Application</h2>
+    <section class="forms">
+      <div class="form-card">
+        <h2>Add Job Application</h2>
 
-  <input id="jobCompany" placeholder="Company" />
-<input id="jobRole" placeholder="Role" />
+        <input id="jobCompany" placeholder="Company" />
+        <input id="jobRole" placeholder="Role" />
 
-<select id="jobStatus">
-  <option value="Saved">Saved</option>
-  <option value="Applied" selected>Applied</option>
-  <option value="Assessment">Assessment</option>
-  <option value="Interview">Interview</option>
-  <option value="Follow Up">Follow Up</option>
-  <option value="Rejected">Rejected</option>
-  <option value="Offer">Offer</option>
-</select>
+        <select id="jobStatus">
+          <option value="Saved">Saved</option>
+          <option value="Applied" selected>Applied</option>
+          <option value="Assessment">Assessment</option>
+          <option value="Interview">Interview</option>
+          <option value="Follow Up">Follow Up</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Offer">Offer</option>
+        </select>
 
-<label for="jobFollowUp">Follow-Up Date</label>
-<input type="date" id="jobFollowUp" />
+        <label for="jobFollowUp">Follow-Up Date</label>
+        <input type="date" id="jobFollowUp" />
 
-<input id="jobLink" placeholder="Job link or notes" />
+        <input id="jobLink" placeholder="Job link or notes" />
 
-  <button onclick="addJob()">Add Application</button>
-</div>
+        <button onclick="addJob()">Add Application</button>
+      </div>
 
-  <div class="form-card">
-    <h2>Add GitHub Commit</h2>
-    <input id="commitMessage" placeholder="Commit message" />
-    <input id="commitFeature" placeholder="Feature area" />
-    <input id="commitLink" placeholder="Commit or repo link" />
-    <button onclick="addCommit()">Add Commit</button>
-  </div>
+      <div class="form-card">
+        <h2>Add GitHub Commit</h2>
 
-  <div class="form-card">
-  <h2>Add LinkedIn Connection</h2>
+        <input id="commitMessage" placeholder="Commit message" />
+        <input id="commitFeature" placeholder="Feature area" />
+        <input id="commitLink" placeholder="Commit or repo link" />
 
-  <input id="connectionName" placeholder="Name" />
-  <input id="connectionCompany" placeholder="Company" />
+        <button onclick="addCommit()">Add Commit</button>
+      </div>
 
-  <label for="connectionFollowUp">Follow-Up Date</label>
-  <input type="date" id="connectionFollowUp" />
+      <div class="form-card">
+        <h2>Add LinkedIn Connection</h2>
 
-  <input id="connectionLink" placeholder="Profile link or notes" />
+        <input id="connectionName" placeholder="Name" />
+        <input id="connectionCompany" placeholder="Company" />
 
-  <button onclick="addConnection()">Add Connection</button>
-</div>
-</section>
+        <label for="connectionFollowUp">Follow-Up Date</label>
+        <input type="date" id="connectionFollowUp" />
 
-<section class="followups">
-  <h2>Follow Ups Due</h2>
-  <p>Jobs and connections with a follow-up date due today or earlier will appear here.</p>
-  <ul id="followUpList"></ul>
-</section>
+        <input id="connectionLink" placeholder="Profile link or notes" />
 
-<section class="summary-panel">
-  <h2>NSS Summary Generator</h2>
-  <p>Generate a clean summary for your bi-weekly NSS career development survey.</p>
+        <button onclick="addConnection()">Add Connection</button>
+      </div>
+    </section>
 
-  <div class="summary-actions">
-    <button onclick="generateSummary()">Generate Summary</button>
-    <button onclick="copySummary()" class="dark">Copy Summary</button>
-  </div>
+    <section class="events-panel">
+      <h2>Networking Events</h2>
+      <p>Track networking events attended during the current NSS reporting period.</p>
 
-  <textarea id="summaryOutput" readonly placeholder="Your generated summary will appear here."></textarea>
-</section>
+      <div class="event-form">
+        <div>
+          <label for="eventName">Event Name</label>
+          <input type="text" id="eventName" placeholder="Example: Murfreesboro Tech Meetup" />
+        </div>
 
-<section class="lists">
-  <div>
-    <h2>Applications</h2>
-    <ul id="jobList"></ul>
-  </div>
+        <div>
+          <label for="eventDate">Event Date</label>
+          <input type="date" id="eventDate" />
+        </div>
 
-  <div>
-    <h2>Commits</h2>
-    <ul id="commitList"></ul>
-  </div>
+        <div>
+          <label for="eventNotes">Notes</label>
+          <input type="text" id="eventNotes" placeholder="Optional notes" />
+        </div>
 
-  <div>
-    <h2>Connections</h2>
-    <ul id="connectionList"></ul>
-  </div>
-</section>
+        <button onclick="addEvent()">Add Event</button>
+      </div>
 
-</main>
+      <ul id="eventList"></ul>
+    </section>
+
+    <section class="followups">
+      <h2>Follow Ups Due</h2>
+      <p>Jobs and connections with a follow-up date due today or earlier will appear here.</p>
+
+      <ul id="followUpList"></ul>
+    </section>
+
+    <section class="summary-panel">
+      <h2>NSS Summary Generator</h2>
+      <p>Generate a clean summary for your bi-weekly NSS career development survey.</p>
+
+      <div class="summary-actions">
+        <button onclick="generateSummary()">Generate Summary</button>
+        <button onclick="copySummary()" class="dark">Copy Summary</button>
+      </div>
+
+      <textarea id="summaryOutput" readonly placeholder="Your generated summary will appear here."></textarea>
+    </section>
+
+    <section class="lists">
+      <div>
+        <h2>Applications</h2>
+        <ul id="jobList"></ul>
+      </div>
+
+      <div>
+        <h2>Commits</h2>
+        <ul id="commitList"></ul>
+      </div>
+
+      <div>
+        <h2>Connections</h2>
+        <ul id="connectionList"></ul>
+      </div>
+
+      <div>
+        <h2>Networking Events</h2>
+        <ul id="networkingEventList"></ul>
+      </div>
+    </section>
+  </main>
 
   <script src="script.js"></script>
 </body>

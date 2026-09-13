@@ -31,8 +31,14 @@ let reportingPeriod = JSON.parse(localStorage.getItem(PERIOD_KEY)) || {
 let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
   jobs: [],
   commits: [],
-  connections: []
+  connections: [],
+  events: []
 };
+
+data.jobs = data.jobs || [];
+data.commits = data.commits || [];
+data.connections = data.connections || [];
+data.events = data.events || [];
 
 function getInputValue(id) {
   const element = document.getElementById(id);
@@ -41,6 +47,7 @@ function getInputValue(id) {
 
 function setInputValue(id, value) {
   const element = document.getElementById(id);
+
   if (element) {
     element.value = value;
   }
@@ -127,6 +134,29 @@ function addConnection() {
   render();
 }
 
+function addEvent() {
+  const name = getInputValue("eventName");
+  const date = getInputValue("eventDate");
+  const notes = getInputValue("eventNotes");
+
+  if (!name) {
+    alert("Add the networking event name.");
+    return;
+  }
+
+  data.events.push({
+    name,
+    date: date || new Date().toLocaleDateString(),
+    notes
+  });
+
+  setInputValue("eventName", "");
+  setInputValue("eventDate", "");
+  setInputValue("eventNotes", "");
+
+  render();
+}
+
 function render() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
@@ -144,7 +174,7 @@ function render() {
   renderList(
     "commitList",
     data.commits,
-    item => `${item.date} | ${item.message}`,
+    item => `${item.date} | ${item.message}${item.feature ? " | " + item.feature : ""}`,
     "commits"
   );
 
@@ -157,6 +187,20 @@ function render() {
       return `${item.date} | ${item.name}${company}${followUpText}`;
     },
     "connections"
+  );
+
+  renderList(
+    "eventList",
+    data.events,
+    item => `${item.date} | ${item.name}${item.notes ? " | " + item.notes : ""}`,
+    "events"
+  );
+
+  renderList(
+    "networkingEventList",
+    data.events,
+    item => `${item.date} | ${item.name}${item.notes ? " | " + item.notes : ""}`,
+    "events"
   );
 
   updateProgress("jobCount", "jobBar", data.jobs.length, goals.jobs);
@@ -204,6 +248,8 @@ function renderList(elementId, items, formatter, type) {
 function deleteEntry(type, index) {
   const confirmed = confirm("Delete this entry?");
   if (!confirmed) return;
+
+  if (!data[type]) return;
 
   data[type].splice(index, 1);
   render();
@@ -285,7 +331,8 @@ function exportProgress() {
     totals: {
       jobs: data.jobs.length,
       commits: data.commits.length,
-      connections: data.connections.length
+      connections: data.connections.length,
+      events: data.events.length
     },
     data
   };
@@ -311,7 +358,8 @@ function resetTracker() {
   data = {
     jobs: [],
     commits: [],
-    connections: []
+    connections: [],
+    events: []
   };
 
   localStorage.removeItem(STORAGE_KEY);
@@ -322,11 +370,12 @@ function generateSummary() {
   const jobCount = data.jobs.length;
   const commitCount = data.commits.length;
   const connectionCount = data.connections.length;
+  const eventCount = data.events.length;
 
   const jobStatusCounts = getJobStatusCounts();
   const statusSummary = formatStatusSummary(jobStatusCounts);
 
-  const summary = `This period I completed ${jobCount} job application${jobCount === 1 ? "" : "s"}, made ${commitCount} GitHub commit${commitCount === 1 ? "" : "s"}, and added ${connectionCount} LinkedIn connection${connectionCount === 1 ? "" : "s"}. I also continued building my Career Quota Tracker app to document my job search activity, networking progress, GitHub development work, and follow-up tasks.${statusSummary}`;
+  const summary = `This period I completed ${jobCount} job application${jobCount === 1 ? "" : "s"}, made ${commitCount} GitHub commit${commitCount === 1 ? "" : "s"}, added ${connectionCount} LinkedIn connection${connectionCount === 1 ? "" : "s"}, and attended/logged ${eventCount} networking event${eventCount === 1 ? "" : "s"}. I also continued building my Career Quota Tracker app to document my job search activity, networking progress, GitHub development work, follow-up tasks, and NSS reporting.${statusSummary}`;
 
   const output = document.getElementById("summaryOutput");
 
@@ -416,6 +465,16 @@ function exportCSV(type) {
     }));
   }
 
+  if (type === "events") {
+    filename = "career-tracker-events.csv";
+    rows = data.events.map(event => ({
+      Type: "Networking Event",
+      Date: event.date || "",
+      Name: event.name || "",
+      Notes: event.notes || ""
+    }));
+  }
+
   if (type === "all") {
     filename = "career-tracker-full-report.csv";
 
@@ -449,7 +508,17 @@ function exportCSV(type) {
       LinkOrNotes: commit.link || ""
     }));
 
-    rows = [...jobRows, ...connectionRows, ...commitRows];
+    const eventRows = data.events.map(event => ({
+      Type: "Networking Event",
+      Date: event.date || "",
+      NameOrCompany: event.name || "",
+      RoleOrMessage: event.notes || "",
+      StatusOrFeature: "",
+      FollowUpDate: "",
+      LinkOrNotes: ""
+    }));
+
+    rows = [...jobRows, ...connectionRows, ...commitRows, ...eventRows];
   }
 
   if (!rows.length) {
@@ -538,6 +607,7 @@ function renderReportingPeriod() {
   const periodJobs = getItemsInReportingPeriod(data.jobs);
   const periodCommits = getItemsInReportingPeriod(data.commits);
   const periodConnections = getItemsInReportingPeriod(data.connections);
+  const periodEvents = getItemsInReportingPeriod(data.events);
 
   const daysRemaining = getDaysRemaining(reportingPeriod.end);
 
@@ -567,6 +637,14 @@ function renderReportingPeriod() {
         <span>Connections</span>
         <strong>${periodConnections.length}/${goals.connections}</strong>
         ${getPeriodStatus(periodConnections.length, goals.connections)}
+      </div>
+
+      <div class="period-box">
+        <span>Networking Events</span>
+        <strong>${periodEvents.length}</strong>
+        <div class="period-status ${periodEvents.length > 0 ? "met" : "not-met"}">
+          ${periodEvents.length > 0 ? "Logged" : "None logged"}
+        </div>
       </div>
     </div>
   `;
