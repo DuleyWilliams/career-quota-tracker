@@ -188,12 +188,44 @@
           <option value="Offer">Offer</option>
         </select>
 
-        <label for="jobFollowUp">Follow-Up Date</label>
-        <input type="date" id="jobFollowUp" />
+       <label for="jobFollowUp">Follow-Up Date</label>
+<input type="date" id="jobFollowUp" />
 
-        <input id="jobLink" placeholder="Job link or notes" />
+<label for="jobInterviewDate">Interview Date</label>
+<input type="date" id="jobInterviewDate" />
 
-        <button onclick="addJob()">Add Application</button>
+<label for="jobInterviewPhase">Interview Phase</label>
+<select id="jobInterviewPhase">
+  <option value="">None</option>
+  <option value="Phone Screen">Phone Screen</option>
+  <option value="Recruiter Screen">Recruiter Screen</option>
+  <option value="Hiring Manager">Hiring Manager</option>
+  <option value="Technical Interview">Technical Interview</option>
+  <option value="Panel Interview">Panel Interview</option>
+  <option value="Final Interview">Final Interview</option>
+</select>
+
+<label for="jobTechnicalChallenge">Technical Interview / Code Challenge</label>
+<select id="jobTechnicalChallenge">
+  <option value="">Select one</option>
+  <option value="No">No</option>
+  <option value="Yes">Yes</option>
+</select>
+
+<label for="jobChallengeCompleted">Finished Challenge Within Timeframe</label>
+<select id="jobChallengeCompleted">
+  <option value="">Select one</option>
+  <option value="N/A">N/A</option>
+  <option value="Yes">Yes</option>
+  <option value="No">No</option>
+</select>
+
+<label for="jobOfferNotes">Offer Notes</label>
+<input id="jobOfferNotes" placeholder="N/A or offer details" />
+
+<input id="jobLink" placeholder="Job link or notes" />
+
+<button onclick="addJob()">Add Application</button>
       </div>
 
       <div class="form-card">

@@ -58,6 +58,11 @@ function addJob() {
   const role = getInputValue("jobRole");
   const status = getInputValue("jobStatus") || "Applied";
   const followUpDate = getInputValue("jobFollowUp");
+  const interviewDate = getInputValue("jobInterviewDate");
+  const interviewPhase = getInputValue("jobInterviewPhase");
+  const technicalChallenge = getInputValue("jobTechnicalChallenge");
+  const challengeCompleted = getInputValue("jobChallengeCompleted");
+  const offerNotes = getInputValue("jobOfferNotes");
   const link = getInputValue("jobLink");
 
   if (!company || !role) {
@@ -70,6 +75,11 @@ function addJob() {
     role,
     status,
     followUpDate,
+    interviewDate,
+    interviewPhase,
+    technicalChallenge,
+    challengeCompleted,
+    offerNotes,
     link,
     date: new Date().toLocaleDateString()
   });
@@ -78,6 +88,11 @@ function addJob() {
   setInputValue("jobRole", "");
   setInputValue("jobStatus", "Applied");
   setInputValue("jobFollowUp", "");
+  setInputValue("jobInterviewDate", "");
+  setInputValue("jobInterviewPhase", "");
+  setInputValue("jobTechnicalChallenge", "");
+  setInputValue("jobChallengeCompleted", "");
+  setInputValue("jobOfferNotes", "");
   setInputValue("jobLink", "");
 
   render();
@@ -161,15 +176,20 @@ function render() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
   renderList(
-    "jobList",
-    data.jobs,
-    item => {
-      const status = item.status || "Applied";
-      const followUpText = item.followUpDate ? ` | Follow up: ${item.followUpDate}` : "";
-      return `${item.date} | ${status} | ${item.company}: ${item.role}${followUpText}`;
-    },
-    "jobs"
-  );
+  "jobList",
+  data.jobs,
+  item => {
+    const status = item.status || "Applied";
+    const followUpText = item.followUpDate ? ` | Follow up: ${item.followUpDate}` : "";
+    const interviewText = item.interviewDate ? ` | Interview: ${item.interviewDate}` : "";
+    const phaseText = item.interviewPhase ? ` | ${item.interviewPhase}` : "";
+    const challengeText = item.technicalChallenge ? ` | Challenge: ${item.technicalChallenge}` : "";
+    const offerText = item.offerNotes ? ` | Offer: ${item.offerNotes}` : "";
+
+    return `${item.date} | ${status} | ${item.company}: ${item.role}${followUpText}${interviewText}${phaseText}${challengeText}${offerText}`;
+  },
+  "jobs"
+);
 
   renderList(
     "commitList",
@@ -374,8 +394,11 @@ function generateSummary() {
 
   const jobStatusCounts = getJobStatusCounts();
   const statusSummary = formatStatusSummary(jobStatusCounts);
+  const interviewCount = data.jobs.filter(job => job.interviewDate || job.status === "Interview").length;
+  const offerCount = data.jobs.filter(job => job.status === "Offer" || job.offerNotes).length;
+  const challengeCount = data.jobs.filter(job => job.technicalChallenge === "Yes").length;
 
-  const summary = `This period I completed ${jobCount} job application${jobCount === 1 ? "" : "s"}, made ${commitCount} GitHub commit${commitCount === 1 ? "" : "s"}, added ${connectionCount} LinkedIn connection${connectionCount === 1 ? "" : "s"}, and attended/logged ${eventCount} networking event${eventCount === 1 ? "" : "s"}. I also continued building my Career Quota Tracker app to document my job search activity, networking progress, GitHub development work, follow-up tasks, and NSS reporting.${statusSummary}`;
+  const summary = `This period I completed ${jobCount} job application${jobCount === 1 ? "" : "s"}, made ${commitCount} GitHub commit${commitCount === 1 ? "" : "s"}, added ${connectionCount} LinkedIn connection${connectionCount === 1 ? "" : "s"}, and attended/logged ${eventCount} networking event${eventCount === 1 ? "" : "s"}. I also tracked ${interviewCount} interview${interviewCount === 1 ? "" : "s"}, ${challengeCount} technical interview/code challenge${challengeCount === 1 ? "" : "s"}, and ${offerCount} offer-related update${offerCount === 1 ? "" : "s"}. I continued building my Career Quota Tracker app to document job search activity, networking progress, GitHub development work, follow-up tasks, and NSS reporting.${statusSummary}`;
 
   const output = document.getElementById("summaryOutput");
 
@@ -430,17 +453,22 @@ function exportCSV(type) {
   let filename = "";
 
   if (type === "jobs") {
-    filename = "career-tracker-jobs.csv";
-    rows = data.jobs.map(job => ({
-      Type: "Job",
-      Date: job.date || "",
-      Company: job.company || "",
-      Role: job.role || "",
-      Status: job.status || "Applied",
-      FollowUpDate: job.followUpDate || "",
-      LinkOrNotes: job.link || ""
-    }));
-  }
+  filename = "career-tracker-jobs.csv";
+  rows = data.jobs.map(job => ({
+    Type: "Job",
+    Date: job.date || "",
+    Company: job.company || "",
+    Role: job.role || "",
+    Status: job.status || "Applied",
+    FollowUpDate: job.followUpDate || "",
+    InterviewDate: job.interviewDate || "",
+    InterviewPhase: job.interviewPhase || "",
+    TechnicalChallenge: job.technicalChallenge || "",
+    ChallengeCompleted: job.challengeCompleted || "",
+    OfferNotes: job.offerNotes || "",
+    LinkOrNotes: job.link || ""
+  }));
+}
 
   if (type === "connections") {
     filename = "career-tracker-connections.csv";
@@ -479,14 +507,21 @@ function exportCSV(type) {
     filename = "career-tracker-full-report.csv";
 
     const jobRows = data.jobs.map(job => ({
-      Type: "Job",
-      Date: job.date || "",
-      NameOrCompany: job.company || "",
-      RoleOrMessage: job.role || "",
-      StatusOrFeature: job.status || "Applied",
-      FollowUpDate: job.followUpDate || "",
-      LinkOrNotes: job.link || ""
-    }));
+  Type: "Job",
+  Date: job.date || "",
+  NameOrCompany: job.company || "",
+  RoleOrMessage: job.role || "",
+  StatusOrFeature: job.status || "Applied",
+  FollowUpDate: job.followUpDate || "",
+  LinkOrNotes: [
+    job.link || "",
+    job.interviewDate ? `Interview Date: ${job.interviewDate}` : "",
+    job.interviewPhase ? `Interview Phase: ${job.interviewPhase}` : "",
+    job.technicalChallenge ? `Technical Challenge: ${job.technicalChallenge}` : "",
+    job.challengeCompleted ? `Challenge Completed: ${job.challengeCompleted}` : "",
+    job.offerNotes ? `Offer Notes: ${job.offerNotes}` : ""
+  ].filter(Boolean).join(" | ")
+}));
 
     const connectionRows = data.connections.map(connection => ({
       Type: "Connection",
