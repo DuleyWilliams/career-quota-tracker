@@ -298,6 +298,22 @@
       <textarea id="summaryOutput" readonly placeholder="Your generated summary will appear here."></textarea>
     </section>
 
+    <section class="form-helper-panel">
+  <h2>NSS Form Helper</h2>
+  <p>Generate field-by-field answers for the NSS bi-weekly job search update form.</p>
+
+  <div class="summary-actions">
+    <button onclick="generateNssFormHelper()">Generate NSS Form Answers</button>
+    <button onclick="copyNssFormHelper()" class="dark">Copy Form Answers</button>
+  </div>
+
+  <textarea
+    id="nssFormHelperOutput"
+    readonly
+    placeholder="Your NSS form answers will appear here."
+  ></textarea>
+</section>
+
     <section class="lists">
       <div>
         <h2>Applications</h2>

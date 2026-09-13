@@ -862,4 +862,251 @@ function showProfileSaveStatus(message, saved) {
   }
 }
 
+function generateNssFormHelper() {
+  const output = document.getElementById("nssFormHelperOutput");
+
+  if (!output) return;
+
+  const periodJobs = getItemsInReportingPeriod(data.jobs);
+  const periodCommits = getItemsInReportingPeriod(data.commits);
+  const periodConnections = getItemsInReportingPeriod(data.connections);
+  const periodEvents = getItemsInReportingPeriod(data.events);
+
+  const appliedJobs = periodJobs.filter(job => {
+    const status = job.status || "Applied";
+    return status !== "Saved";
+  });
+
+  const interviews = periodJobs.filter(job => {
+    return job.interviewDate || job.interviewPhase || job.status === "Interview";
+  });
+
+  const technicalChallenges = periodJobs.filter(job => {
+    return job.technicalChallenge === "Yes";
+  });
+
+  const offers = periodJobs.filter(job => {
+    return job.status === "Offer" || job.offerNotes;
+  });
+
+  const skillsSharpAnswer = buildSkillsSharpAnswer(periodCommits);
+
+  const helperText = [
+    "NSS JOB SEARCH UPDATE FORM ANSWERS",
+    "==================================",
+    "",
+    "STUDENT INFORMATION",
+    "-------------------",
+    `Name: ${nssProfile.name || ""}`,
+    `Email: ${nssProfile.email || ""}`,
+    `Student ID: ${nssProfile.studentId || ""}`,
+    `Phone Number: ${nssProfile.phone || ""}`,
+    `Cohort: ${nssProfile.cohort || ""}`,
+    `Opportunity Tuition Program: ${nssProfile.opportunityTuition || ""}`,
+    `Currently Working: ${nssProfile.currentlyWorking || ""}`,
+    `Job Search Status: ${nssProfile.jobSearchStatus || ""}`,
+    `Tech Employment Since Demo Day: ${nssProfile.techEmployment || ""}`,
+    `Employer Address and Phone: ${nssProfile.employerInfo || "N/A"}`,
+    "",
+    "WHAT ARE YOU DOING TO KEEP YOUR SKILLS SHARP?",
+    "--------------------------------------------",
+    skillsSharpAnswer,
+    "",
+    "NETWORKING",
+    "----------",
+    `How many professional connections have you made since your last update?`,
+    `${periodConnections.length}`,
+    "",
+    "List professional connections as a result of networking, one name per line:",
+    formatConnectionList(periodConnections),
+    "",
+    "What networking events have you attended since your last update?",
+    formatEventList(periodEvents),
+    "",
+    "APPLICATIONS",
+    "------------",
+    "How many companies have you applied to since your last update?",
+    `${appliedJobs.length}`,
+    "",
+    "List companies applied to, one company per line:",
+    formatJobCompanyList(appliedJobs),
+    "",
+    "INTERVIEWS",
+    "----------",
+    "How many interviews have you scheduled since your last update?",
+    `${interviews.length}`,
+    "",
+    "List interviews scheduled with date/phase, one company per line:",
+    formatInterviewList(interviews),
+    "",
+    "TECHNICAL INTERVIEWS / CODE CHALLENGES",
+    "--------------------------------------",
+    "Have you had any technical interviews/code challenges?",
+    technicalChallenges.length > 0 ? "Yes" : "No",
+    "",
+    "Technical interview/code challenge details:",
+    formatTechnicalChallengeList(technicalChallenges),
+    "",
+    "If completed technical interview/code challenge, did you finish within timeframe?",
+    formatChallengeCompletionAnswer(technicalChallenges),
+    "",
+    "OFFERS",
+    "------",
+    "Received any offers? Tell who from and if declined/considering.",
+    formatOfferList(offers),
+    "",
+    "PROJECT LINKS",
+    "-------------",
+    `GitHub Repo: ${nssProfile.githubRepo || "https://github.com/DuleyWilliams/career-quota-tracker"}`,
+    `Live Project: ${nssProfile.liveProject || "https://duleywilliams.github.io/career-quota-tracker/"}`,
+    "",
+    "GITHUB ACTIVITY",
+    "---------------",
+    `GitHub commits logged this period: ${periodCommits.length}`,
+    formatCommitList(periodCommits)
+  ].join("\n");
+
+  output.value = helperText;
+}
+
+function buildSkillsSharpAnswer(commits) {
+  const baseAnswer = "I have been keeping my skills sharp by building and improving a Career Quota Tracker app using HTML, CSS, JavaScript, Git, GitHub, GitHub Pages, and browser localStorage. The app tracks my NSS bi-weekly requirements for job applications, GitHub commits, LinkedIn connections, networking events, interviews, offers, follow-ups, and reporting.";
+
+  if (!commits.length) {
+    return baseAnswer;
+  }
+
+  const commitSummary = commits
+    .map(commit => commit.feature || commit.message)
+    .filter(Boolean)
+    .slice(0, 6)
+    .join(", ");
+
+  return `${baseAnswer} Recent development work included: ${commitSummary}.`;
+}
+
+function formatConnectionList(connections) {
+  if (!connections.length) {
+    return "No professional connections logged this period.";
+  }
+
+  return connections
+    .map(connection => {
+      const company = connection.company ? ` - ${connection.company}` : "";
+      return `${connection.name}${company}`;
+    })
+    .join("\n");
+}
+
+function formatEventList(events) {
+  if (!events.length) {
+    return "No networking events logged this period.";
+  }
+
+  return events
+    .map(event => {
+      const notes = event.notes ? ` - ${event.notes}` : "";
+      return `${event.date || ""} - ${event.name}${notes}`;
+    })
+    .join("\n");
+}
+
+function formatJobCompanyList(jobs) {
+  if (!jobs.length) {
+    return "No job applications logged this period.";
+  }
+
+  return jobs
+    .map(job => `${job.company} - ${job.role}`)
+    .join("\n");
+}
+
+function formatInterviewList(interviews) {
+  if (!interviews.length) {
+    return "No interviews scheduled this period.";
+  }
+
+  return interviews
+    .map(job => {
+      const date = job.interviewDate || "Date not listed";
+      const phase = job.interviewPhase || job.status || "Interview";
+      return `${job.company} - ${job.role} - ${date} - ${phase}`;
+    })
+    .join("\n");
+}
+
+function formatTechnicalChallengeList(challenges) {
+  if (!challenges.length) {
+    return "No technical interviews or code challenges logged this period.";
+  }
+
+  return challenges
+    .map(job => {
+      const completed = job.challengeCompleted || "Not specified";
+      return `${job.company} - ${job.role} - Completed within timeframe: ${completed}`;
+    })
+    .join("\n");
+}
+
+function formatChallengeCompletionAnswer(challenges) {
+  if (!challenges.length) {
+    return "N/A";
+  }
+
+  const completedValues = challenges
+    .map(job => job.challengeCompleted)
+    .filter(Boolean);
+
+  if (!completedValues.length) {
+    return "Not specified.";
+  }
+
+  return completedValues.join(", ");
+}
+
+function formatOfferList(offers) {
+  if (!offers.length) {
+    return "No offers logged this period.";
+  }
+
+  return offers
+    .map(job => {
+      const notes = job.offerNotes || "Offer logged";
+      return `${job.company} - ${job.role} - ${notes}`;
+    })
+    .join("\n");
+}
+
+function formatCommitList(commits) {
+  if (!commits.length) {
+    return "No GitHub commits logged this period.";
+  }
+
+  return commits
+    .map(commit => {
+      const feature = commit.feature ? ` - ${commit.feature}` : "";
+      return `${commit.date || ""} - ${commit.message}${feature}`;
+    })
+    .join("\n");
+}
+
+function copyNssFormHelper() {
+  const output = document.getElementById("nssFormHelperOutput");
+
+  if (!output || !output.value) {
+    alert("Generate the NSS form answers first.");
+    return;
+  }
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(output.value);
+    alert("NSS form answers copied.");
+    return;
+  }
+
+  output.select();
+  document.execCommand("copy");
+  alert("NSS form answers copied.");
+}
+
 render();
