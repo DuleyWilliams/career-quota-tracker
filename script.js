@@ -7,6 +7,7 @@ const goals = {
 const STORAGE_KEY = "careerQuotaTrackerData";
 const PROFILE_KEY = "careerQuotaTrackerNssProfile";
 const PERIOD_KEY = "careerQuotaTrackerPeriod";
+const LAST_UPDATED_KEY = "careerQuotaTrackerLastUpdated";
 
 let nssProfile = {
   name: "",
@@ -95,6 +96,7 @@ function addJob() {
   setInputValue("jobOfferNotes", "");
   setInputValue("jobLink", "");
 
+  updateLastUpdatedTimestamp();
   render();
 }
 
@@ -119,6 +121,7 @@ function addCommit() {
   setInputValue("commitFeature", "");
   setInputValue("commitLink", "");
 
+  updateLastUpdatedTimestamp();
   render();
 }
 
@@ -146,6 +149,7 @@ function addConnection() {
   setInputValue("connectionFollowUp", "");
   setInputValue("connectionLink", "");
 
+  updateLastUpdatedTimestamp();
   render();
 }
 
@@ -169,6 +173,7 @@ function addEvent() {
   setInputValue("eventDate", "");
   setInputValue("eventNotes", "");
 
+  updateLastUpdatedTimestamp();
   render();
 }
 
@@ -176,20 +181,20 @@ function render() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
   renderList(
-  "jobList",
-  data.jobs,
-  item => {
-    const status = item.status || "Applied";
-    const followUpText = item.followUpDate ? ` | Follow up: ${item.followUpDate}` : "";
-    const interviewText = item.interviewDate ? ` | Interview: ${item.interviewDate}` : "";
-    const phaseText = item.interviewPhase ? ` | ${item.interviewPhase}` : "";
-    const challengeText = item.technicalChallenge ? ` | Challenge: ${item.technicalChallenge}` : "";
-    const offerText = item.offerNotes ? ` | Offer: ${item.offerNotes}` : "";
+    "jobList",
+    data.jobs,
+    item => {
+      const status = item.status || "Applied";
+      const followUpText = item.followUpDate ? ` | Follow up: ${item.followUpDate}` : "";
+      const interviewText = item.interviewDate ? ` | Interview: ${item.interviewDate}` : "";
+      const phaseText = item.interviewPhase ? ` | ${item.interviewPhase}` : "";
+      const challengeText = item.technicalChallenge ? ` | Challenge: ${item.technicalChallenge}` : "";
+      const offerText = item.offerNotes ? ` | Offer: ${item.offerNotes}` : "";
 
-    return `${item.date} | ${status} | ${item.company}: ${item.role}${followUpText}${interviewText}${phaseText}${challengeText}${offerText}`;
-  },
-  "jobs"
-);
+      return `${item.date} | ${status} | ${item.company}: ${item.role}${followUpText}${interviewText}${phaseText}${challengeText}${offerText}`;
+    },
+    "jobs"
+  );
 
   renderList(
     "commitList",
@@ -230,6 +235,7 @@ function render() {
   renderFollowUps();
   renderReportingPeriod();
   renderNssProfile();
+  renderLastUpdatedTimestamp();
 }
 
 function renderList(elementId, items, formatter, type) {
@@ -272,6 +278,8 @@ function deleteEntry(type, index) {
   if (!data[type]) return;
 
   data[type].splice(index, 1);
+
+  updateLastUpdatedTimestamp();
   render();
 }
 
@@ -383,6 +391,8 @@ function resetTracker() {
   };
 
   localStorage.removeItem(STORAGE_KEY);
+
+  updateLastUpdatedTimestamp();
   render();
 }
 
@@ -437,15 +447,7 @@ function copySummary() {
     return;
   }
 
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(output.value);
-    alert("Summary copied.");
-    return;
-  }
-
-  output.select();
-  document.execCommand("copy");
-  alert("Summary copied.");
+  copyTextToClipboard(output.value, "Summary copied.");
 }
 
 function exportCSV(type) {
@@ -453,22 +455,22 @@ function exportCSV(type) {
   let filename = "";
 
   if (type === "jobs") {
-  filename = "career-tracker-jobs.csv";
-  rows = data.jobs.map(job => ({
-    Type: "Job",
-    Date: job.date || "",
-    Company: job.company || "",
-    Role: job.role || "",
-    Status: job.status || "Applied",
-    FollowUpDate: job.followUpDate || "",
-    InterviewDate: job.interviewDate || "",
-    InterviewPhase: job.interviewPhase || "",
-    TechnicalChallenge: job.technicalChallenge || "",
-    ChallengeCompleted: job.challengeCompleted || "",
-    OfferNotes: job.offerNotes || "",
-    LinkOrNotes: job.link || ""
-  }));
-}
+    filename = "career-tracker-jobs.csv";
+    rows = data.jobs.map(job => ({
+      Type: "Job",
+      Date: job.date || "",
+      Company: job.company || "",
+      Role: job.role || "",
+      Status: job.status || "Applied",
+      FollowUpDate: job.followUpDate || "",
+      InterviewDate: job.interviewDate || "",
+      InterviewPhase: job.interviewPhase || "",
+      TechnicalChallenge: job.technicalChallenge || "",
+      ChallengeCompleted: job.challengeCompleted || "",
+      OfferNotes: job.offerNotes || "",
+      LinkOrNotes: job.link || ""
+    }));
+  }
 
   if (type === "connections") {
     filename = "career-tracker-connections.csv";
@@ -507,21 +509,21 @@ function exportCSV(type) {
     filename = "career-tracker-full-report.csv";
 
     const jobRows = data.jobs.map(job => ({
-  Type: "Job",
-  Date: job.date || "",
-  NameOrCompany: job.company || "",
-  RoleOrMessage: job.role || "",
-  StatusOrFeature: job.status || "Applied",
-  FollowUpDate: job.followUpDate || "",
-  LinkOrNotes: [
-    job.link || "",
-    job.interviewDate ? `Interview Date: ${job.interviewDate}` : "",
-    job.interviewPhase ? `Interview Phase: ${job.interviewPhase}` : "",
-    job.technicalChallenge ? `Technical Challenge: ${job.technicalChallenge}` : "",
-    job.challengeCompleted ? `Challenge Completed: ${job.challengeCompleted}` : "",
-    job.offerNotes ? `Offer Notes: ${job.offerNotes}` : ""
-  ].filter(Boolean).join(" | ")
-}));
+      Type: "Job",
+      Date: job.date || "",
+      NameOrCompany: job.company || "",
+      RoleOrMessage: job.role || "",
+      StatusOrFeature: job.status || "Applied",
+      FollowUpDate: job.followUpDate || "",
+      LinkOrNotes: [
+        job.link || "",
+        job.interviewDate ? `Interview Date: ${job.interviewDate}` : "",
+        job.interviewPhase ? `Interview Phase: ${job.interviewPhase}` : "",
+        job.technicalChallenge ? `Technical Challenge: ${job.technicalChallenge}` : "",
+        job.challengeCompleted ? `Challenge Completed: ${job.challengeCompleted}` : "",
+        job.offerNotes ? `Offer Notes: ${job.offerNotes}` : ""
+      ].filter(Boolean).join(" | ")
+    }));
 
     const connectionRows = data.connections.map(connection => ({
       Type: "Connection",
@@ -621,6 +623,8 @@ function saveReportingPeriod() {
   };
 
   localStorage.setItem(PERIOD_KEY, JSON.stringify(reportingPeriod));
+
+  updateLastUpdatedTimestamp();
   renderReportingPeriod();
 }
 
@@ -786,6 +790,7 @@ function saveNssProfile() {
   nssProfile = profileToSave;
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profileToSave));
 
+  updateLastUpdatedTimestamp();
   renderNssProfile();
   showProfileSaveStatus("Profile settings saved.", true);
 }
@@ -797,6 +802,7 @@ function clearNssProfile() {
   nssProfile = getEmptyNssProfile();
   localStorage.removeItem(PROFILE_KEY);
 
+  updateLastUpdatedTimestamp();
   renderNssProfile();
   showProfileSaveStatus("Profile settings cleared.", false);
 }
@@ -1117,15 +1123,7 @@ function copyNssFormHelper() {
     return;
   }
 
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(output.value);
-    alert("NSS form answers copied.");
-    return;
-  }
-
-  output.select();
-  document.execCommand("copy");
-  alert("NSS form answers copied.");
+  copyTextToClipboard(output.value, "NSS form answers copied.");
 }
 
 function copyHelperField(fieldName) {
@@ -1158,6 +1156,7 @@ function copyTextToClipboard(text, successMessage) {
 
   alert(successMessage);
 }
+
 function importProgressJSON(event) {
   const file = event.target.files[0];
 
@@ -1177,7 +1176,6 @@ function importProgressJSON(event) {
   reader.onload = function handleImport(loadEvent) {
     try {
       const imported = JSON.parse(loadEvent.target.result);
-
       const importedData = imported.data || imported;
 
       const restoredData = {
@@ -1191,6 +1189,7 @@ function importProgressJSON(event) {
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
+      updateLastUpdatedTimestamp();
       render();
 
       alert("Progress JSON imported successfully.");
@@ -1204,4 +1203,23 @@ function importProgressJSON(event) {
 
   reader.readAsText(file);
 }
+
+function updateLastUpdatedTimestamp() {
+  const timestamp = new Date().toLocaleString();
+  localStorage.setItem(LAST_UPDATED_KEY, timestamp);
+  renderLastUpdatedTimestamp();
+}
+
+function renderLastUpdatedTimestamp() {
+  const lastUpdatedText = document.getElementById("lastUpdatedText");
+
+  if (!lastUpdatedText) return;
+
+  const savedTimestamp = localStorage.getItem(LAST_UPDATED_KEY);
+
+  lastUpdatedText.textContent = savedTimestamp
+    ? `Last updated: ${savedTimestamp}`
+    : "Last updated: Not yet updated";
+}
+
 render();

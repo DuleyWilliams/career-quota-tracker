@@ -554,3 +554,20 @@ li {
 .file-input {
   display: none;
 }
+.last-updated-panel {
+  padding: 18px 40px 0;
+}
+
+.last-updated-panel p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+@media (max-width: 850px) {
+  .last-updated-panel {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
