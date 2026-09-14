@@ -17,14 +17,26 @@
     </header>
 
     <section class="toolbar">
-      <button onclick="exportProgress()">Export Progress JSON</button>
-      <button onclick="exportCSV('jobs')">Export Jobs CSV</button>
-      <button onclick="exportCSV('connections')">Export Connections CSV</button>
-      <button onclick="exportCSV('commits')">Export Commits CSV</button>
-      <button onclick="exportCSV('events')">Export Events CSV</button>
-      <button onclick="exportCSV('all')">Export Full Report CSV</button>
-      <button onclick="resetTracker()" class="dark">Reset Tracker</button>
-    </section>
+  <button onclick="exportProgress()">Export Progress JSON</button>
+
+  <label for="jsonImportInput" class="import-label">
+    Import Progress JSON
+  </label>
+  <input
+    type="file"
+    id="jsonImportInput"
+    accept="application/json,.json"
+    onchange="importProgressJSON(event)"
+    class="file-input"
+  />
+
+  <button onclick="exportCSV('jobs')">Export Jobs CSV</button>
+  <button onclick="exportCSV('connections')">Export Connections CSV</button>
+  <button onclick="exportCSV('commits')">Export Commits CSV</button>
+  <button onclick="exportCSV('events')">Export Events CSV</button>
+  <button onclick="exportCSV('all')">Export Full Report CSV</button>
+  <button onclick="resetTracker()" class="dark">Reset Tracker</button>
+</section>
 
     <section class="period-panel">
       <h2>Bi-Weekly Reporting Period</h2>

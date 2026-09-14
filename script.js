@@ -1158,4 +1158,50 @@ function copyTextToClipboard(text, successMessage) {
 
   alert(successMessage);
 }
+function importProgressJSON(event) {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const confirmed = confirm(
+    "Importing this file will replace your current tracker data on this browser. Continue?"
+  );
+
+  if (!confirmed) {
+    event.target.value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function handleImport(loadEvent) {
+    try {
+      const imported = JSON.parse(loadEvent.target.result);
+
+      const importedData = imported.data || imported;
+
+      const restoredData = {
+        jobs: Array.isArray(importedData.jobs) ? importedData.jobs : [],
+        commits: Array.isArray(importedData.commits) ? importedData.commits : [],
+        connections: Array.isArray(importedData.connections) ? importedData.connections : [],
+        events: Array.isArray(importedData.events) ? importedData.events : []
+      };
+
+      data = restoredData;
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+      render();
+
+      alert("Progress JSON imported successfully.");
+    } catch (error) {
+      console.error("Import failed:", error);
+      alert("Could not import this JSON file. Make sure it is a valid Career Quota Tracker export.");
+    }
+
+    event.target.value = "";
+  };
+
+  reader.readAsText(file);
+}
 render();
